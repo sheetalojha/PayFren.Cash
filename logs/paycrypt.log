@@ -1,0 +1,57 @@
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 01:54:16"}
+{"emailId":"email_1758918256648_e7l3x40en","filePath":"storage/emails/2025-09-26T20-24-16-648Z_email_1758918256648_e7l3x40en.eml","level":"info","message":"Email saved to storage","service":"paycrypt-email-server","timestamp":"2025-09-27 01:54:16"}
+{"emailId":"email_1758918256648_e7l3x40en","filePath":"storage/emails/2025-09-26T20-24-16-648Z_email_1758918256648_e7l3x40en.eml","level":"info","message":"EML file downloaded","service":"paycrypt-email-server","timestamp":"2025-09-27 01:54:16"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 01:59:31"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 02:06:53"}
+{"level":"info","message":"Starting PayCrypt Email Server...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:06:53"}
+{"host":"0.0.0.0","level":"info","message":"PayCrypt SMTP server started","port":25,"secure":false,"service":"paycrypt-email-server","timestamp":"2025-09-27 02:06:53"}
+{"level":"info","message":"PayCrypt Email Server started successfully","service":"paycrypt-email-server","smtp":{"host":"0.0.0.0","port":25,"secure":false},"storage":{"path":"./storage/emails"},"timestamp":"2025-09-27 02:06:53"}
+{"level":"info","message":"Received SIGINT, starting graceful shutdown...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:14:57"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 02:15:01"}
+{"level":"info","message":"Starting PayCrypt Email Server...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:15:01"}
+{"host":"0.0.0.0","level":"info","message":"PayCrypt SMTP server started","port":25,"secure":false,"service":"paycrypt-email-server","timestamp":"2025-09-27 02:15:01"}
+{"level":"info","message":"PayCrypt Email Server started successfully","service":"paycrypt-email-server","smtp":{"host":"0.0.0.0","port":25,"secure":false},"storage":{"path":"./storage/emails"},"timestamp":"2025-09-27 02:15:01"}
+{"level":"info","message":"Received SIGINT, starting graceful shutdown...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:15:19"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 02:15:23"}
+{"level":"info","message":"Starting PayCrypt Email Server...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:15:23"}
+{"host":"0.0.0.0","level":"info","message":"PayCrypt SMTP server started","port":25,"secure":false,"service":"paycrypt-email-server","timestamp":"2025-09-27 02:15:23"}
+{"level":"info","message":"PayCrypt Email Server started successfully","service":"paycrypt-email-server","smtp":{"host":"0.0.0.0","port":25,"secure":false},"storage":{"path":"./storage/emails"},"timestamp":"2025-09-27 02:15:23"}
+{"level":"info","message":"Received SIGUSR2, starting graceful shutdown...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:18:41"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 02:18:41"}
+{"level":"info","message":"Starting PayCrypt Email Server...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:18:41"}
+{"host":"0.0.0.0","level":"info","message":"PayCrypt SMTP server started","port":25,"secure":false,"service":"paycrypt-email-server","timestamp":"2025-09-27 02:18:41"}
+{"level":"info","message":"PayCrypt Email Server started successfully","service":"paycrypt-email-server","smtp":{"host":"0.0.0.0","port":25,"secure":false},"storage":{"path":"./storage/emails"},"timestamp":"2025-09-27 02:18:41"}
+{"clientIP":"127.0.0.1","connectionCount":1,"level":"info","message":"New SMTP connection","service":"paycrypt-email-server","timestamp":"2025-09-27 02:23:31"}
+{"level":"warn","message":"Sender domain not allowed","senderDomain":"example.com","senderEmail":"sender@example.com","service":"paycrypt-email-server","timestamp":"2025-09-27 02:23:31"}
+{"clientIP":"127.0.0.1","level":"info","message":"SMTP connection closed","service":"paycrypt-email-server","timestamp":"2025-09-27 02:23:31"}
+{"level":"info","message":"Received SIGINT, starting graceful shutdown...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:27:45"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 02:27:51"}
+{"level":"info","message":"Starting PayCrypt Email Server...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:27:51"}
+{"host":"0.0.0.0","level":"info","message":"PayCrypt SMTP server started","port":25,"secure":false,"service":"paycrypt-email-server","timestamp":"2025-09-27 02:27:51"}
+{"level":"info","message":"PayCrypt Email Server started successfully","service":"paycrypt-email-server","smtp":{"host":"0.0.0.0","port":25,"secure":false},"storage":{"path":"./storage/emails"},"timestamp":"2025-09-27 02:27:51"}
+{"clientIP":"127.0.0.1","connectionCount":1,"level":"info","message":"New SMTP connection","service":"paycrypt-email-server","timestamp":"2025-09-27 02:27:56"}
+{"level":"warn","message":"Sender domain not allowed","senderDomain":"example.com","senderEmail":"sender@example.com","service":"paycrypt-email-server","timestamp":"2025-09-27 02:27:56"}
+{"clientIP":"127.0.0.1","level":"info","message":"SMTP connection closed","service":"paycrypt-email-server","timestamp":"2025-09-27 02:27:56"}
+{"level":"info","message":"Received SIGUSR2, starting graceful shutdown...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:35"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:35"}
+{"level":"info","message":"Starting PayCrypt Email Server...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:35"}
+{"host":"0.0.0.0","level":"info","message":"PayCrypt SMTP server started","port":25,"secure":false,"service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:35"}
+{"level":"info","message":"PayCrypt Email Server started successfully","service":"paycrypt-email-server","smtp":{"host":"0.0.0.0","port":25,"secure":false},"storage":{"path":"./storage/emails"},"timestamp":"2025-09-27 02:28:35"}
+{"clientIP":"127.0.0.1","connectionCount":1,"level":"info","message":"New SMTP connection","service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:44"}
+{"level":"info","message":"MAIL FROM accepted","senderEmail":"sender@example.com","service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:44"}
+{"level":"warn","message":"Invalid recipient email format","recipientEmail":"test@localhost","service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:44"}
+{"clientIP":"127.0.0.1","level":"info","message":"SMTP connection closed","service":"paycrypt-email-server","timestamp":"2025-09-27 02:28:44"}
+{"clientIP":"127.0.0.1","connectionCount":1,"level":"info","message":"New SMTP connection","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"level":"info","message":"MAIL FROM accepted","senderEmail":"sender@example.com","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"level":"info","message":"RCPT TO accepted","recipientEmail":"recepient@example.com","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"emailId":"email_1758920386461_2tw0upr00","from":"sender@example.com","level":"info","message":"Email received","service":"paycrypt-email-server","subject":"test Sat, 27 Sep 2025 02:29:46 +0530","timestamp":"2025-09-27 02:29:46","to":["recepient@example.com"]}
+{"emailId":"email_1758920386461_2tw0upr00","filePath":"storage/emails/2025-09-26T20-59-46-461Z_email_1758920386461_2tw0upr00.eml","level":"info","message":"Email saved to storage","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"emailId":"email_1758920386461_2tw0upr00","emlPath":"storage/emails/2025-09-26T20-59-46-461Z_email_1758920386461_2tw0upr00.eml","level":"info","message":"Email received but no valid transaction found","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"clientIP":"127.0.0.1","level":"info","message":"Email processed successfully","service":"paycrypt-email-server","size":291,"timestamp":"2025-09-27 02:29:46"}
+{"clientIP":"127.0.0.1","level":"info","message":"SMTP connection closed","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"level":"info","message":"Received SIGUSR2, starting graceful shutdown...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"interval":86400000,"level":"info","message":"Storage cleanup scheduler started","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"level":"info","message":"Starting PayCrypt Email Server...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"host":"0.0.0.0","level":"info","message":"PayCrypt SMTP server started","port":25,"secure":false,"service":"paycrypt-email-server","timestamp":"2025-09-27 02:29:46"}
+{"level":"info","message":"PayCrypt Email Server started successfully","service":"paycrypt-email-server","smtp":{"host":"0.0.0.0","port":25,"secure":false},"storage":{"path":"./storage/emails"},"timestamp":"2025-09-27 02:29:46"}
+{"level":"info","message":"Received SIGINT, starting graceful shutdown...","service":"paycrypt-email-server","timestamp":"2025-09-27 02:30:48"}
