@@ -1,7 +1,7 @@
 const config = {
   smtp: {
-    port: process.env.SMTP_PORT || 25,
-    host: process.env.SMTP_HOST || '0.0.0.0',
+    port: process.env.SMTP_PORT || 2525,
+    host: process.env.SMTP_HOST || '127.0.0.1',
     secure: process.env.SMTP_SECURE === 'true' || false,
     authOptional: true,
     logger: true,
@@ -11,7 +11,7 @@ const config = {
   },
 
   email: {
-    allowedDomains: process.env.ALLOWED_DOMAINS ? process.env.ALLOWED_DOMAINS.split(',') : ['paycrypt.xyz'],
+    allowedDomains: process.env.ALLOWED_DOMAINS ? process.env.ALLOWED_DOMAINS.split(',') : ['payfren.cash'],
     maxEmailsPerMinute: parseInt(process.env.MAX_EMAILS_PER_MINUTE) || 100,
     enableSpamFilter: process.env.ENABLE_SPAM_FILTER === 'true' || true,
     enableDkimValidation: process.env.ENABLE_DKIM_VALIDATION === 'true' || false,
@@ -27,7 +27,7 @@ const config = {
   database: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT) || 5432,
-    database: process.env.DB_NAME || 'paycrypt',
+    database: process.env.DB_NAME || 'payfren',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'password',
   },
