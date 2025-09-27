@@ -331,6 +331,15 @@ class PayCryptEmailServer {
       memoryUsage: process.memoryUsage()
     };
   }
+  async processIncomingEmail(emailBuffer, clientInfo = {}) {
+    // clientInfo can contain {remoteAddress, hostname} for logging
+    const fakeSession = {
+      remoteAddress: clientInfo.remoteAddress || 'mailgun-inbound',
+      hostname: clientInfo.hostname || 'mailgun',
+    };
+  
+    return this.processEmail(emailBuffer, fakeSession);
+  }
 }
 
 module.exports = PayCryptEmailServer;
