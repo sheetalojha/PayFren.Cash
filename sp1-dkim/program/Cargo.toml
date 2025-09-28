@@ -1,0 +1,13 @@
+[package]
+version = "0.1.0"
+name = "fibonacci-program"
+edition = "2021"
+
+[dependencies]
+alloy-sol-types = { workspace = true }
+sp1-zkvm = "2.0.0"
+fibonacci-lib = { path = "../lib" }
+cfdkim = { git = "https://github.com/allemanfredi/dkim", default-features = false, features = []  }
+mailparse = "0.14"
+sha2 = "0.10.8"
+regex="1.11.0"
