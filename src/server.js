@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Load environment variables
+require('dotenv').config();
+
 const PayCryptEmailServer = require('./services/PayCryptEmailServer');
 const logger = require('./utils/logger');
 const config = require('./config/config');

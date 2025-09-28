@@ -18,6 +18,19 @@ const config = {
     enableSpfValidation: process.env.ENABLE_SPF_VALIDATION === 'true' || false,
   },
 
+  // Outgoing email configuration for sending replies
+  outgoingEmail: {
+    host: process.env.OUTGOING_SMTP_HOST || 'smtp.mailgun.org',
+    port: parseInt(process.env.OUTGOING_SMTP_PORT) || 587,
+    secure: process.env.OUTGOING_SMTP_SECURE === 'true' || false,
+    auth: {
+      user: process.env.OUTGOING_SMTP_USER || 'notif@payfren.cash',
+      pass: process.env.OUTGOING_SMTP_PASS || '8859206a85f263089bf13e36b0c7919b-e1076420-95e7f753'
+    },
+    from: process.env.OUTGOING_EMAIL_FROM || 'noreply@payfren.cash',
+    replyTo: process.env.OUTGOING_EMAIL_REPLY_TO || 'support@payfren.cash'
+  },
+
   storage: {
     emlPath: process.env.EML_STORAGE_PATH || './storage/emails',
     maxStorageSize: parseInt(process.env.MAX_STORAGE_SIZE) || 1000 * 1024 * 1024, // 1GB
@@ -35,7 +48,7 @@ const config = {
   // Queue Configuration
   queue: {
     url: process.env.QUEUE_URL || 'amqp://localhost',
-    exchange: process.env.QUEUE_EXCHANGE || 'paycrypt.emails',
+    exchange: process.env.QUEUE_EXCHANGE || 'payfren.emails',
     queue: process.env.QUEUE_NAME || 'email.processing',
   },
 

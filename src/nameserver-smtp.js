@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const { simpleParser } = require('mailparser');
 const logger = require('./utils/logger');
