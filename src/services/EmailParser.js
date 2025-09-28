@@ -91,21 +91,6 @@ class EmailParser {
           continue;
         }
 
-        // Check if send@paycrypt.xyz is in CC or TO
-        const paycryptEmail = 'send@paycrypt.xyz';
-        const isPaycryptTransaction = 
-          emailData.to.some(addr => addr.toLowerCase() === paycryptEmail) ||
-          emailData.cc.some(addr => addr.toLowerCase() === paycryptEmail);
-
-        if (!isPaycryptTransaction) {
-          logger.warn('PayCrypt email not found in recipients', { 
-            emailId: emailData.id, 
-            to: emailData.to, 
-            cc: emailData.cc 
-          });
-          continue;
-        }
-
         return {
           amount,
           currency,

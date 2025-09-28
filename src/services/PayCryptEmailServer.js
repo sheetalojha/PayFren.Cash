@@ -3,11 +3,15 @@ const config = require('../config/config');
 const logger = require('../utils/logger');
 const EmailParser = require('./EmailParser');
 const EMLStorageService = require('./EMLStorageService');
+const SmartContractService = require('./SmartContractService');
+const NotificationService = require('./NotificationService');
 
 class PayCryptEmailServer {
   constructor() {
     this.emailParser = new EmailParser();
     this.emlStorage = new EMLStorageService();
+    this.smartContractService = new SmartContractService();
+    this.notificationService = new NotificationService();
     this.rateLimiter = new Map();
     this.connectionCounts = new Map();
     
@@ -183,10 +187,34 @@ class PayCryptEmailServer {
       if (emailData.isValidTransaction) {
         logger.emailParsed(emailData.id, emailData.transactionData);
         
-        // TODO: Queue the transaction for processing
-        // TODO: Generate zero-knowledge proof
-        // TODO: Submit to blockchain
-        // TODO: Send notification emails
+        try {
+          // Wait for smart contract service to be initialized
+          await this.smartContractService.waitForInitialization();
+          
+          // Process transaction through smart contract service
+          const result = await this.smartContractService.processTransaction(emailData.transactionData);
+          
+          logger.info('Smart contract transaction processed', {
+            emailId: emailData.id,
+            transactionData: emailData.transactionData,
+            result,
+            emlPath
+          });
+
+          // Send notifications to both sender and recipient
+          await this.sendTransactionNotifications(emailData, result);
+          
+        } catch (error) {
+          logger.error('Smart contract transaction processing failed', {
+            emailId: emailData.id,
+            transactionData: emailData.transactionData,
+            error: error.message,
+            emlPath
+          });
+          
+          // Continue processing even if smart contract fails
+          // This ensures emails are still stored
+        }
 
         logger.info('Valid PayCrypt transaction detected', {
           emailId: emailData.id,
@@ -319,6 +347,52 @@ class PayCryptEmailServer {
   }
 
   /**
+   * Send transaction notifications to both sender and recipient
+   * @param {Object} originalEmail - Original email data
+   * @param {Object} transactionResult - Transaction processing result
+   */
+  async sendTransactionNotifications(originalEmail, transactionResult) {
+    try {
+      // Wait for notification service to be initialized
+      await this.notificationService.waitForInitialization();
+
+      // Add recipient email to the original email data for notification service
+      const emailDataWithRecipient = {
+        ...originalEmail,
+        recipientEmail: originalEmail.transactionData?.recipientEmail
+      };
+
+      const notificationResult = await this.notificationService.sendTransactionNotifications(
+        emailDataWithRecipient, 
+        transactionResult
+      );
+
+      if (notificationResult.success) {
+        logger.info('Transaction notifications sent successfully', {
+          emailId: originalEmail.id,
+          senderSuccess: notificationResult.senderNotification?.success || false,
+          recipientSuccess: notificationResult.recipientNotification?.success || false,
+          transactionAction: transactionResult.action,
+          txHash: transactionResult.txHash
+        });
+      } else {
+        logger.warn('Failed to send some transaction notifications', {
+          emailId: originalEmail.id,
+          errors: notificationResult.errors,
+          transactionAction: transactionResult.action
+        });
+      }
+
+    } catch (error) {
+      logger.error('Error sending transaction notifications', {
+        emailId: originalEmail.id,
+        error: error.message,
+        transactionAction: transactionResult.action
+      });
+    }
+  }
+
+  /**
    * Get server statistics
    * @returns {Object} Server statistics
    */
@@ -328,7 +402,9 @@ class PayCryptEmailServer {
       rateLimitedIPs: Array.from(this.rateLimiter.keys()).length,
       connectionCounts: Object.fromEntries(this.connectionCounts),
       uptime: process.uptime(),
-      memoryUsage: process.memoryUsage()
+      memoryUsage: process.memoryUsage(),
+      smartContractService: this.smartContractService.getStatus(),
+      notificationService: this.notificationService.getStatus()
     };
   }
   async processIncomingEmail(emailBuffer, clientInfo = {}) {
