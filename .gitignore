@@ -1,3 +1,6 @@
+.env
 env.example
 storage
 node_modules
+sp1-dkim/target
+logs

@@ -11,7 +11,7 @@ const config = {
   },
 
   email: {
-    allowedDomains: process.env.ALLOWED_DOMAINS ? process.env.ALLOWED_DOMAINS.split(',') : ['payfren.cash'],
+    allowedDomains: process.env.ALLOWED_DOMAINS ? process.env.ALLOWED_DOMAINS.split(',') : [],
     maxEmailsPerMinute: parseInt(process.env.MAX_EMAILS_PER_MINUTE) || 100,
     enableSpamFilter: process.env.ENABLE_SPAM_FILTER === 'true' || true,
     enableDkimValidation: process.env.ENABLE_DKIM_VALIDATION === 'true' || false,
@@ -24,11 +24,11 @@ const config = {
     port: parseInt(process.env.OUTGOING_SMTP_PORT) || 587,
     secure: process.env.OUTGOING_SMTP_SECURE === 'true' || false,
     auth: {
-      user: process.env.OUTGOING_SMTP_USER || 'notif@payfren.cash',
-      pass: process.env.OUTGOING_SMTP_PASS || '8859206a85f263089bf13e36b0c7919b-e1076420-95e7f753'
+      user: process.env.OUTGOING_SMTP_USER || '',
+      pass: process.env.OUTGOING_SMTP_PASS || ''
     },
-    from: process.env.OUTGOING_EMAIL_FROM || 'noreply@payfren.cash',
-    replyTo: process.env.OUTGOING_EMAIL_REPLY_TO || 'support@payfren.cash'
+    from: process.env.OUTGOING_EMAIL_FROM || '',
+    replyTo: process.env.OUTGOING_EMAIL_REPLY_TO || ''
   },
 
   storage: {
