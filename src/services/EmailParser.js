@@ -1,9 +1,14 @@
 const { simpleParser } = require('mailparser');
 const logger = require('../utils/logger');
+const config = require('../config/config');
 
 class EmailParser {
   constructor() {
     this.transactionPatterns = [
+      // New pattern: "send 5 dot: dil mange more!" (amount currency: call_sign)
+      /send\s+(\d+(?:\.\d+)?)\s+(\w+):\s*(.+)/i,
+      
+      // Legacy patterns for backward compatibility
       // Pattern 1: "Send 0.1 PYUSD to recipient@example.com"
       /send\s+(\d+(?:\.\d+)?)\s+(\w+)\s+to\s+([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i,
       
@@ -12,14 +17,17 @@ class EmailParser {
       
       // Pattern 3: "Pay 100 USDC to john@example.com"
       /pay\s+(\d+(?:\.\d+)?)\s+(\w+)\s+to\s+([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i,
-      
-      // Pattern 4: "Send 0.01 ETH to alice@crypto.com"
-      /send\s+(\d+(?:\.\d+)?)\s+(\w+)\s+to\s+([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i,
     ];
+
+    // Balance inquiry pattern
+    this.balanceInquiryPattern = /payfren:\s*what'?s?\s*my\s*balance\?/i;
 
     this.supportedCurrencies = [
       'BTC', 'ETH', 'USDC', 'USDT', 'PYUSD', 'DAI', 'MATIC', 'SOL', 'ADA', 'DOT'
     ];
+
+    // PayCrypt processing email addresses - support multiple domains
+    this.paycryptEmails = config.email.paycryptEmails;
   }
 
   /**
@@ -52,15 +60,72 @@ class EmailParser {
       // Extract transaction details
       const transactionData = this.extractTransactionDetails(emailData);
       
+      // Extract balance inquiry details
+      const balanceInquiry = this.extractBalanceInquiry(emailData);
+      
       return {
         ...emailData,
         transactionData,
-        isValidTransaction: !!transactionData
+        balanceInquiry,
+        isValidTransaction: !!transactionData,
+        isValidBalanceInquiry: !!balanceInquiry
       };
 
     } catch (error) {
       logger.emailError('unknown', error, { context: 'email_parsing' });
       throw new Error(`Failed to parse email: ${error.message}`);
+    }
+  }
+
+  /**
+   * Check if email is a balance inquiry
+   * @param {Object} emailData - Parsed email data
+   * @returns {Object|null} Balance inquiry details or null
+   */
+  extractBalanceInquiry(emailData) {
+    try {
+      const emailBody = (emailData.text || emailData.html || '').toLowerCase();
+      
+      // Check if it's a balance inquiry
+      const balanceMatch = emailBody.match(this.balanceInquiryPattern);
+      if (!balanceMatch) {
+        return null;
+      }
+
+      // Check if only PayCrypt emails are in 'to' field (no other recipients)
+      const hasOnlyPaycryptEmails = emailData.to.every(addr => 
+        this.paycryptEmails.includes(addr.toLowerCase())
+      );
+
+      if (!hasOnlyPaycryptEmails) {
+        logger.info('Balance inquiry ignored - other recipients found', {
+          emailId: emailData.id,
+          to: emailData.to,
+          paycryptEmails: this.paycryptEmails
+        });
+        return null;
+      }
+
+      logger.info('Balance inquiry detected', {
+        emailId: emailData.id,
+        from: emailData.from,
+        to: emailData.to
+      });
+
+      return {
+        senderEmail: emailData.from.toLowerCase(),
+        inquiryType: 'balance_check',
+        timestamp: emailData.date,
+        emailId: emailData.id,
+        messageId: emailData.messageId
+      };
+
+    } catch (error) {
+      logger.error('Error extracting balance inquiry', { 
+        emailId: emailData.id, 
+        error: error.message 
+      });
+      return null;
     }
   }
 
@@ -72,13 +137,14 @@ class EmailParser {
   extractTransactionDetails(emailData) {
     const content = `${emailData.subject} ${emailData.text}`.toLowerCase();
     
-    for (const pattern of this.transactionPatterns) {
+    for (let i = 0; i < this.transactionPatterns.length; i++) {
+      const pattern = this.transactionPatterns[i];
       const match = content.match(pattern);
+      
       if (match) {
         const amount = parseFloat(match[1]);
         const currency = match[2].toUpperCase();
-        const recipientEmail = match[3].toLowerCase();
-
+        
         // Validate currency
         if (!this.supportedCurrencies.includes(currency)) {
           logger.warn('Unsupported currency detected', { currency, emailId: emailData.id });
@@ -91,16 +157,57 @@ class EmailParser {
           continue;
         }
 
-        return {
-          amount,
-          currency,
-          recipientEmail,
-          senderEmail: emailData.from.toLowerCase(),
-          transactionType: 'transfer',
-          timestamp: emailData.date,
-          emailId: emailData.id,
-          messageId: emailData.messageId
-        };
+        // Check if any PayCrypt processing email is in CC or TO
+        const isPaycryptTransaction = 
+          emailData.to.some(addr => this.paycryptEmails.includes(addr.toLowerCase())) ||
+          emailData.cc.some(addr => this.paycryptEmails.includes(addr.toLowerCase()));
+
+        if (!isPaycryptTransaction) {
+          logger.warn('PayCrypt email not found in recipients', { 
+            emailId: emailData.id, 
+            to: emailData.to, 
+            cc: emailData.cc,
+            expectedEmails: this.paycryptEmails
+          });
+          continue;
+        }
+
+        // Handle new format: "send 5 dot: dil mange more!"
+        if (i === 0 && match[3]) {
+          const callSign = match[3].trim();
+          
+          // Get recipient email from 'to' field (first non-PayCrypt email)
+          const recipientEmail = emailData.to.find(addr => 
+            !this.paycryptEmails.includes(addr.toLowerCase())
+          )?.toLowerCase();
+          
+          return {
+            amount,
+            currency,
+            callSign,
+            recipientEmail,
+            senderEmail: emailData.from.toLowerCase(),
+            transactionType: 'transfer_with_call_sign',
+            timestamp: emailData.date,
+            emailId: emailData.id,
+            messageId: emailData.messageId
+          };
+        }
+        
+        // Handle legacy format: "send 5 dot to recipient@example.com"
+        if (i > 0 && match[3]) {
+          const recipientEmail = match[3].toLowerCase();
+          return {
+            amount,
+            currency,
+            recipientEmail,
+            senderEmail: emailData.from.toLowerCase(),
+            transactionType: 'transfer',
+            timestamp: emailData.date,
+            emailId: emailData.id,
+            messageId: emailData.messageId
+          };
+        }
       }
     }
 

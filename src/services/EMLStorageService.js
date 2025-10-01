@@ -301,6 +301,47 @@ class EMLStorageService {
       throw new Error(`Failed to export EML file: ${error.message}`);
     }
   }
+
+  /**
+   * Delete EML file and metadata after successful processing
+   * @param {String} emailId - Email identifier
+   * @returns {Promise<boolean>} Success status
+   */
+  async deleteEML(emailId) {
+    try {
+      // Find the EML file by email ID
+      const files = await fs.readdir(this.storagePath);
+      const emlFile = files.find(file => file.includes(emailId) && file.endsWith('.eml'));
+      const jsonFile = files.find(file => file.includes(emailId) && file.endsWith('.json'));
+
+      if (!emlFile) {
+        logger.warn('EML file not found for deletion', { emailId });
+        return false;
+      }
+
+      const emlPath = path.join(this.storagePath, emlFile);
+      const jsonPath = jsonFile ? path.join(this.storagePath, jsonFile) : null;
+
+      // Delete EML file
+      await fs.unlink(emlPath);
+      logger.info('EML file deleted', { emailId, emlPath });
+
+      // Delete JSON metadata file if it exists
+      if (jsonPath && await fs.access(jsonPath).then(() => true).catch(() => false)) {
+        await fs.unlink(jsonPath);
+        logger.info('EML metadata file deleted', { emailId, jsonPath });
+      }
+
+      return true;
+
+    } catch (error) {
+      logger.error('Error deleting EML file', { 
+        emailId, 
+        error: error.message 
+      });
+      return false;
+    }
+  }
 }
 
 module.exports = EMLStorageService;

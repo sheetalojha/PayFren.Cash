@@ -40,6 +40,66 @@ class NotificationService {
   }
 
   /**
+   * Send balance inquiry response
+   * @param {Object} originalEmail - Original email data
+   * @param {Object} balanceResult - Balance inquiry result
+   * @returns {Promise<Object>} Response results
+   */
+  async sendBalanceInquiryResponse(originalEmail, balanceResult) {
+    try {
+      if (!this.isInitialized) {
+        logger.warn('NotificationService not initialized, skipping balance inquiry response');
+        return {
+          success: false,
+          error: 'NotificationService not initialized',
+          senderNotification: null
+        };
+      }
+
+      const results = {
+        success: true,
+        senderNotification: null,
+        errors: []
+      };
+
+      // Send response to sender only (balance inquiry is personal)
+      try {
+        const senderResult = await this.sendSenderBalanceResponse(originalEmail, balanceResult);
+        results.senderNotification = senderResult;
+        
+        if (!senderResult.success) {
+          results.errors.push(`Sender balance response failed: ${senderResult.error}`);
+        }
+      } catch (error) {
+        logger.error('Error sending sender balance response', {
+          emailId: originalEmail.id,
+          error: error.message
+        });
+        results.errors.push(`Sender balance response error: ${error.message}`);
+      }
+
+      // Check if there were any errors
+      if (results.errors.length > 0) {
+        results.success = false;
+      }
+
+      return results;
+
+    } catch (error) {
+      logger.error('Error in sendBalanceInquiryResponse', {
+        emailId: originalEmail.id,
+        error: error.message
+      });
+      
+      return {
+        success: false,
+        error: error.message,
+        senderNotification: null
+      };
+    }
+  }
+
+  /**
    * Send transaction notifications to both sender and recipient
    * @param {Object} originalEmail - Original email data
    * @param {Object} transactionResult - Transaction processing result
@@ -129,6 +189,52 @@ class NotificationService {
         error: error.message,
         senderNotification: null,
         recipientNotification: null
+      };
+    }
+  }
+
+  /**
+   * Send balance response to sender
+   * @param {Object} originalEmail - Original email data
+   * @param {Object} balanceResult - Balance inquiry result
+   * @returns {Promise<Object>} Notification result
+   */
+  async sendSenderBalanceResponse(originalEmail, balanceResult) {
+    try {
+      const emailBody = this.emailReplyService.generateBalanceInquiryEmailBody(balanceResult);
+      const plainTextBody = this.emailReplyService.generatePlainTextFromHtml(emailBody);
+      
+      const result = await this.emailReplyService.sendCustomEmail({
+        to: originalEmail.from,
+        subject: `Re: ${originalEmail.subject || 'Balance Inquiry'}`,
+        htmlBody: emailBody,
+        textBody: plainTextBody
+      });
+      
+      logger.info('Balance inquiry response sent to sender', {
+        emailId: originalEmail.id,
+        sender: originalEmail.from,
+        balanceAction: balanceResult.action,
+        walletAddress: balanceResult.walletAddress
+      });
+
+      return {
+        success: true,
+        recipient: originalEmail.from,
+        messageId: result.messageId
+      };
+
+    } catch (error) {
+      logger.error('Error sending balance inquiry response to sender', {
+        emailId: originalEmail.id,
+        sender: originalEmail.from,
+        error: error.message
+      });
+
+      return {
+        success: false,
+        error: error.message,
+        recipient: originalEmail.from
       };
     }
   }

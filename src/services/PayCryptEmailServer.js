@@ -204,6 +204,9 @@ class PayCryptEmailServer {
           // Send notifications to both sender and recipient
           await this.sendTransactionNotifications(emailData, result);
           
+          // Clean up EML files after successful processing
+          await this.cleanupEMLFiles(emailData.id);
+          
         } catch (error) {
           logger.error('Smart contract transaction processing failed', {
             emailId: emailData.id,
@@ -221,6 +224,41 @@ class PayCryptEmailServer {
           transactionData: emailData.transactionData,
           emlPath
         });
+      } else if (emailData.isValidBalanceInquiry) {
+        logger.info('Balance inquiry detected', {
+          emailId: emailData.id,
+          balanceInquiry: emailData.balanceInquiry,
+          emlPath
+        });
+        
+        try {
+          // Wait for smart contract service to be initialized
+          await this.smartContractService.waitForInitialization();
+          
+          // Process balance inquiry through smart contract service
+          const result = await this.smartContractService.processBalanceInquiry(emailData.balanceInquiry);
+          
+          logger.info('Balance inquiry processed', {
+            emailId: emailData.id,
+            balanceInquiry: emailData.balanceInquiry,
+            result,
+            emlPath
+          });
+
+          // Send balance inquiry response
+          await this.sendBalanceInquiryResponse(emailData, result);
+          
+          // Clean up EML files after successful processing
+          await this.cleanupEMLFiles(emailData.id);
+          
+        } catch (error) {
+          logger.error('Balance inquiry processing failed', {
+            emailId: emailData.id,
+            balanceInquiry: emailData.balanceInquiry,
+            error: error.message,
+            emlPath
+          });
+        }
       } else {
         logger.info('Email received but no valid transaction found', {
           emailId: emailData.id,
@@ -344,6 +382,64 @@ class PayCryptEmailServer {
         resolve();
       });
     });
+  }
+
+  /**
+   * Clean up EML files after successful processing
+   * @param {String} emailId - Email identifier
+   */
+  async cleanupEMLFiles(emailId) {
+    try {
+      const deleted = await this.emlStorage.deleteEML(emailId);
+      if (deleted) {
+        logger.info('EML files cleaned up successfully', { emailId });
+      } else {
+        logger.warn('EML files cleanup failed or files not found', { emailId });
+      }
+    } catch (error) {
+      logger.error('Error during EML cleanup', { 
+        emailId, 
+        error: error.message 
+      });
+    }
+  }
+
+  /**
+   * Send balance inquiry response
+   * @param {Object} originalEmail - Original email data
+   * @param {Object} balanceResult - Balance inquiry result
+   */
+  async sendBalanceInquiryResponse(originalEmail, balanceResult) {
+    try {
+      // Wait for notification service to be initialized
+      await this.notificationService.waitForInitialization();
+
+      const responseResult = await this.notificationService.sendBalanceInquiryResponse(
+        originalEmail, 
+        balanceResult
+      );
+
+      if (responseResult.success) {
+        logger.info('Balance inquiry response sent successfully', {
+          emailId: originalEmail.id,
+          senderSuccess: responseResult.senderNotification?.success || false,
+          balanceAction: balanceResult.action,
+          walletAddress: balanceResult.walletAddress
+        });
+      } else {
+        logger.warn('Failed to send balance inquiry response', {
+          emailId: originalEmail.id,
+          errors: responseResult.errors,
+          balanceAction: balanceResult.action
+        });
+      }
+
+    } catch (error) {
+      logger.error('Error sending balance inquiry response', {
+        emailId: originalEmail.id,
+        error: error.message
+      });
+    }
   }
 
   /**

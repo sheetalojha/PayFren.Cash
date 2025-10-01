@@ -16,6 +16,12 @@ const config = {
     enableSpamFilter: process.env.ENABLE_SPAM_FILTER === 'true' || true,
     enableDkimValidation: process.env.ENABLE_DKIM_VALIDATION === 'true' || false,
     enableSpfValidation: process.env.ENABLE_SPF_VALIDATION === 'true' || false,
+    // PayCrypt processing email addresses
+    paycryptEmails: process.env.PAYCRYPT_EMAILS ? process.env.PAYCRYPT_EMAILS.split(',') : [
+      'send@paycrypt.xyz',
+      'send@payfren.cash', 
+      'send@mg.payfren.cash'
+    ],
   },
 
   // Outgoing email configuration for sending replies
